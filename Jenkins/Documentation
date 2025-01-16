@@ -1,1 +1,14 @@
+docker run --name jenkins-blueocean \
+  -p 8080:8080 -p 50000:50000 \
+  -v jenkins_home:/var/jenkins_home \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  --user root \
+  myjenkins-blueocean:2.414.2        //starte eine Container mit Jenkins, musste ich sock: damit jenkins docker befehle ausführen kann(deswegen auch root)
+
+Läuft auf localhost:8080
+
+finde initialPasswort im Docker Jenkins-Container
+Gebe Benutzer etc an
+
+
 
