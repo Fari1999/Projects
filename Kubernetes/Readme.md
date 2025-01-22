@@ -23,11 +23,7 @@ In this example, we’ll use our laptop along with Minikube, VirtualBox and Kube
 
 # Overview:
 
-I'm assuming you have Virtualbox already setup. If you need a demo on any of these tools, just let me know in the comments.
-
 Install VirtualBox on your system:
-https://www.virtualbox.org/wiki/Downloads
- 
  
 ### Minikube install:
 On windows, MAC OS or Linux, download and install minikube from the following link:
@@ -308,7 +304,7 @@ NAME                                   DESIRED   CURRENT   READY   AGE
 replicaset.apps/meetup-app-9f6b86b86   3         3         3       8m52s
 ```
 
-Now, run this command:
+Now, run this command: geht auch mit kubectl delete service meetup-app, kubectl delete deployment meetup-app
 
 ```
 C:\minikube>kubectl delete deploy/meetup-app svc/meetup-app
@@ -334,9 +330,169 @@ C:\minikube>minikube stop
 
 **All done! Great work.**
 
-## Next Steps
-If you#re looking to get into learning kubernetes in more detail, I can highly recommend James Spurin. Checkout his Youtube channel here: https://www.youtube.com/@DiveInto
+## minikube start --driver=docker, falls du Kubernetes auf auf Docker als Container starten willst
+Das würde Probleme geben da Deployments nicht dort gestartet wurden.
+Benutze Befehl minikube update-context
+````
+C:\docker\Kubernetes\Minikube>minikube update-context 
+! Keine Anpassungen erforderlich für den Kontext "minikube" #ich hatte schon update-context ausgeführt
+* Der aktuelle Kontext ist "minikube"
 
-This was just a quick introduction into Docker and Kubernetes. I hope you had some fun.
+C:\docker\Kubernetes\Minikube>kubectl get pods -A
+NAMESPACE              NAME                                         READY   STATUS    RESTARTS       AGE
+default                meetup-app-f64db594b-96qqh                   1/1     Running   3 (154m ago)   42h
+default                meetup-app-f64db594b-cpd9h                   1/1     Running   3 (154m ago)   42h
+default                meetup-app-f64db594b-vvhld                   1/1     Running   3 (154m ago)   43h
+kube-system            coredns-668d6bf9bc-kwg4f                     1/1     Running   3 (154m ago)   43h
+kube-system            etcd-minikube                                1/1     Running   3 (154m ago)   43h
+kube-system            kube-apiserver-minikube                      1/1     Running   3 (154m ago)   43h
+kube-system            kube-controller-manager-minikube             1/1     Running   3 (154m ago)   43h
+kube-system            kube-proxy-ll68w                             1/1     Running   3 (154m ago)   43h
+kube-system            kube-scheduler-minikube                      1/1     Running   3 (154m ago)   43h
+kube-system            storage-provisioner                          1/1     Running   6 (154m ago)   43h
+kubernetes-dashboard   dashboard-metrics-scraper-5d59dccf9b-2thhv   1/1     Running   3 (154m ago)   42h
+kubernetes-dashboard   kubernetes-dashboard-7779f9b69b-6456v        1/1     Running   5 (153m ago)   42h
 
-Good luck in your Journey!
+````
+
+## Deployments und andere Funktionen
+
+````
+Was ist ein Deployment?
+
+Ein Deployment sorgt dafür, dass eine bestimmte Anzahl von Pod-Replikaten (Replikas) einer Anwendung ausgeführt wird. Es ist ideal, wenn du stateless Anwendungen (z. B. Webserver) bereitstellen möchtest.
+
+Ein Deployment bietet:
+
+    Skalierbarkeit: Du kannst die Anzahl der Pods anpassen.
+    Selbstheilung: Kubernetes startet abgestürzte Pods neu.
+    Rolling Updates: Nahtlose Aktualisierung deiner Anwendungsversionen.
+    Rollback: Möglichkeit, auf eine frühere Version zurückzuwechseln.
+
+Andere Möglichkeiten, Anwendungen bereitzustellen
+
+Neben Deployments gibt es verschiedene Ressourcen in Kubernetes für unterschiedliche Anforderungen:
+1. StatefulSet
+
+    Wird verwendet, wenn der Zustand der Anwendung wichtig ist (z. B. Datenbanken, Apache Kafka, Elasticsearch).
+    Bietet garantierte Pod-Identitäten (z. B. pod-0, pod-1) und persistente Speicheranbindung.
+    Beispiele:
+        MySQL, MongoDB, PostgreSQL.
+
+2. DaemonSet
+
+    Gewährleistet, dass ein Pod auf allen Nodes oder einer spezifischen Node-Gruppe im Cluster läuft.
+    Ideal für Node-spezifische Dienste wie Logging, Monitoring, oder Netzwerk-Tools.
+    Beispiele:
+        Fluentd, Prometheus Node Exporter, Cilium.
+
+3. Job
+
+    Führt einmalige Aufgaben aus und endet, sobald sie abgeschlossen sind.
+    Beispiele:
+        Datenmigration, Batch-Prozesse.
+
+4. CronJob
+
+    Plant wiederkehrende Jobs (ähnlich wie Cron in Linux).
+    Beispiele:
+        Tägliche Backups, regelmäßige Berichte.
+
+5. ReplicaSet
+
+    Verwaltet die Anzahl der Pod-Replikate, wird jedoch selten direkt verwendet.
+    Deployment nutzt intern ein ReplicaSet.
+
+6. Pod
+
+    Die kleinste ausführbare Einheit in Kubernetes.
+    Pods werden selten direkt erstellt, da sie keinen automatischen Neustart oder Skalierung unterstützen. Stattdessen werden sie meist über Controller wie Deployments oder StatefulSets verwaltet.
+
+7. Service
+
+    Kein Deployment-Typ, sondern eine Netzwerkressource, die Pods miteinander oder mit der Außenwelt verbindet.
+    Arten von Services:
+        ClusterIP: Interner Zugriff im Cluster.
+        NodePort: Externer Zugriff über einen bestimmten Node-Port.
+        LoadBalancer: Externer Zugriff mit integriertem Load-Balancing (Cloud-Umgebungen).
+
+8. Ingress
+
+    Stellt einen HTTP(S)-Load-Balancer bereit, um mehrere Services hinter einer einzigen IP-Adresse zugänglich zu machen.
+
+````
+Lets start Multi-node Cluster aber Minikube erlaubt keine direkte Änderung der Cluster-Konfiguration (z. B. Anzahl der Nodes, RAM oder CPU) eines bestehenden Clusters.:
+
+```
+C:\minikube>minikube stop
+* Stopping node "minikube"  ...
+* 1 node stopped.
+
+C:\docker\Kubernetes\Minikube>minikube delete
+* "minikube" in docker wird gelöscht...
+* Lösche Container "minikube" ...
+* C:\Users\farfi\.minikube\machines\minikube wird entfernt...
+* Alle Spuren des "minikube" Clusters wurden entfernt.
+
+C:\docker\Kubernetes\Minikube>minikube start --driver=docker --memory=2g --cpus=2 --nodes=3
+* minikube v1.35.0 auf Microsoft Windows 11 Home 10.0.22631.4602 Build 22631.4602
+* Verwende den Treiber docker basierend auf der Benutzer-Konfiguration
+* Verwende den Treiber Docker Desktop mit root-Privilegien
+* Starte "minikube" primary control-plane Node im "minikube" Cluster
+* Ziehe Base Image v0.0.46 ...
+* Erstelle docker container (CPUs=2, Memory=2048MB) ...
+! Failing to connect to https://registry.k8s.io/ from inside the minikube container
+* Um neue externe Images zu ziehen, müsste eventuell ein Proxy konfiguriert werden: https://minikube.sigs.k8s.io/docs/reference/networking/proxy/
+* Vorbereiten von Kubernetes v1.32.0 auf Docker 27.4.1...
+  - Generiere Zertifikate und Schlüssel ...
+  - Starte Control-Plane ...
+  - Konfiguriere RBAC Regeln ...
+* Konfiguriere CNI (Container Networking Interface) ...
+* Verifiziere Kubernetes Komponenten...
+  - Verwende Image gcr.io/k8s-minikube/storage-provisioner:v5
+* Addons aktiviert: storage-provisioner, default-storageclass
+
+* Starte "minikube-m02" worker Node im "minikube" Cluster
+* Ziehe Base Image v0.0.46 ...
+* Erstelle docker container (CPUs=2, Memory=2048MB) ...
+* Gefundene Netzwerkoptionen:
+  - NO_PROXY=192.168.49.2
+  - NO_PROXY=192.168.49.2
+! Failing to connect to https://registry.k8s.io/ from inside the minikube container
+* Um neue externe Images zu ziehen, müsste eventuell ein Proxy konfiguriert werden: https://minikube.sigs.k8s.io/docs/reference/networking/proxy/
+* Vorbereiten von Kubernetes v1.32.0 auf Docker 27.4.1...
+  - env NO_PROXY=192.168.49.2
+* Verifiziere Kubernetes Komponenten...
+
+* Starte "minikube-m03" worker Node im "minikube" Cluster
+* Ziehe Base Image v0.0.46 ...
+* Erstelle docker container (CPUs=2, Memory=2048MB) ...
+* Gefundene Netzwerkoptionen:
+  - NO_PROXY=192.168.49.2,192.168.49.3
+  - NO_PROXY=192.168.49.2,192.168.49.3
+! Failing to connect to https://registry.k8s.io/ from inside the minikube container
+* Um neue externe Images zu ziehen, müsste eventuell ein Proxy konfiguriert werden: https://minikube.sigs.k8s.io/docs/reference/networking/proxy/
+* Vorbereiten von Kubernetes v1.32.0 auf Docker 27.4.1...
+  - env NO_PROXY=192.168.49.2
+  - env NO_PROXY=192.168.49.2,192.168.49.3
+* Verifiziere Kubernetes Komponenten...
+* kubectl nicht gefunden. Falls Sie es benötigen, versuchen Sie 'minikube kubectl -- get pods -A' aufzurufen
+* Fertig! kubectl ist jetzt für die standardmäßige (default) Verwendung des Clusters "minikube" und des Namespaces "default" konfiguriert
+
+```
+
+## kubectl-tools
+````
+C:\docker\Kubernetes\Minikube>kubectl cluster-info
+Kubernetes control plane is running at https://127.0.0.1:60684
+CoreDNS is running at https://127.0.0.1:60684/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+
+C:\docker\Kubernetes\Minikube>kubectl get nodes
+NAME           STATUS   ROLES           AGE     VERSION
+minikube       Ready    control-plane   4m17s   v1.32.0
+minikube-m02   Ready    <none>          3m31s   v1.32.0
+minikube-m03   Ready    <none>          2m42s   v1.32.0
+
+````
