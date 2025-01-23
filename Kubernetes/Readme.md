@@ -496,3 +496,10 @@ minikube-m02   Ready    <none>          3m31s   v1.32.0
 minikube-m03   Ready    <none>          2m42s   v1.32.0
 
 ````
+##tutorials für andere Ressourcen
+````
+statefulset
+https://kubernetes.io/docs/tutorials/stateful-application/basic-stateful-set/#ordered-pod-creation
+job und cronjob
+https://opensource.com/article/20/11/kubernetes-jobs-cronjobs
+````
