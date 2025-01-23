@@ -496,10 +496,51 @@ minikube-m02   Ready    <none>          3m31s   v1.32.0
 minikube-m03   Ready    <none>          2m42s   v1.32.0
 
 ````
-##tutorials für andere Ressourcen
+## tutorials für andere Ressourcen
 ````
 statefulset
 https://kubernetes.io/docs/tutorials/stateful-application/basic-stateful-set/#ordered-pod-creation
 job und cronjob
 https://opensource.com/article/20/11/kubernetes-jobs-cronjobs
+````
+## mit verschiedenen Nodes arbeiten
+Zeigt dir alle pods an und auf welchen nodes sie laufen
+````
+PS C:\docker\Kubernetes\Minikube> kubectl get pods -o wide       
+NAME             READY   STATUS      RESTARTS   AGE   IP           NODE           NOMINATED NODE   READINESS GATES
+job-test-vlrrw   0/1     Completed   0          58m   10.244.1.2   minikube-m02   <none>           <none>
+web-0            1/1     Running     0          30m   10.244.2.2   minikube-m03   <none>           <none>
+web-1            1/1     Running     0          30m   10.244.1.3   minikube-m02   <none>           <none>
+````
+## macht Node minikube-m03 unschedulable
+````
+PS C:\docker\Kubernetes\Minikube> kubectl cordon minikube-m03
+node/minikube-m03 cordoned
+````
+## verschiebt alle pods aus Node minikube-m03
+````
+PS C:\docker\Kubernetes\Minikube> kubectl drain minikube-m03 --ignore-daemonsets --delete-emptydir-data
+node/minikube-m03 already cordoned
+Warning: ignoring DaemonSet-managed Pods: kube-system/kindnet-kj2wh, kube-system/kube-proxy-5bwxf
+evicting pod default/web-0
+pod/web-0 evicted
+node/minikube-m03 drained
+````
+## kann einbisschen dauern, aber dann sollte er auf einem anderen node laufen
+````
+PS C:\docker\Kubernetes\Minikube> kubectl get pods -o wide
+NAME             READY   STATUS              RESTARTS   AGE   IP           NODE           NOMINATED NODE   READINESS GATES
+job-test-vlrrw   0/1     Completed           0          62m   10.244.1.2   minikube-m02   <none>           <none>
+web-0            0/1     ContainerCreating   0          6s    <none>       minikube       <none>           <none>
+web-1            1/1     Running             0          34m   10.244.1.3   minikube-m02   <none>           <none>
+PS C:\docker\Kubernetes\Minikube> kubectl get pods -o wide
+NAME             READY   STATUS      RESTARTS   AGE   IP           NODE           NOMINATED NODE   READINESS GATES
+job-test-vlrrw   0/1     Completed   0          64m   10.244.1.2   minikube-m02   <none>           <none>
+web-0            1/1     Running     0          2m    10.244.0.3   minikube       <none>           <none>
+web-1            1/1     Running     0          35m   10.244.1.3   minikube-m02   <none>           <none>
+````
+## macht Node minikube-m03 schedulable
+````
+PS C:\docker\Kubernetes\Minikube> kubectl uncordon minikube-m03
+node/minikube-m03 uncordoned
 ````
