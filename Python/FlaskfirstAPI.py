@@ -26,3 +26,5 @@ def create_user():
 
 if __name__ == "__main__":
     app.run(debug=True)
+
+#http://127.0.0.1:5000/get-user/123?extra=%22hello%22 gibt dir sowas: Running on http://127.0.0.1:5000 und dann /get-user/123?extra=%22hello%22 z.B. dran hängen
