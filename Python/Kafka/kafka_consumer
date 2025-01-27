@@ -1,6 +1,6 @@
-from kafka import KafkaConsumer
-import sys
-
+from kafka import KafkaConsumer                                                          #starte kafka container in docker
+import sys                                                                               #docker exec -it kafka-kafka-1 kafka-console-producer --broker-list localhost:9092 --topic pythonscript
+                                                                                         #docker exec -it kafka-kafka-1 kafka-console-consumer --bootstrap-server localhost:9092 --topic mytopic --partition 0 --from-beginning
 try:
     # Kafka-Consumer konfigurieren
     consumer = KafkaConsumer(
