@@ -1,0 +1,32 @@
+from kafka import KafkaConsumer
+import sys
+
+try:
+    # Kafka-Consumer konfigurieren
+    consumer = KafkaConsumer(
+        'pythonscript',
+        bootstrap_servers=['192.168.0.100:9094'],
+        auto_offset_reset='earliest',
+        enable_auto_commit=True
+    )
+
+    print("Starte Kafka-Consumer...")
+    
+    # Nachrichten verarbeiten
+    for message in consumer:
+        print(f"Topic: {message.topic}, Partition: {message.partition}, Offset: {message.offset}")
+        print(f"Key: {message.key}, Value: {message.value.decode('utf-8')}")
+        
+except KeyboardInterrupt:
+    # Graceful shutdown bei manueller Unterbrechung
+    print("\nConsumer wurde durch Benutzer gestoppt.")
+    
+except Exception as e:
+    # Allgemeine Fehlerbehandlung
+    print(f"Fehler: {e}")
+    
+finally:
+    # Consumer schließen
+    print("Beende Kafka-Consumer...")
+    consumer.close()
+    sys.exit(0)       
