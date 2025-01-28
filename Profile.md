@@ -9,8 +9,7 @@
 - **Sprachen**: Python, JavaScript, Java, Bash
 - **Frameworks & Tools**: Django, Flask, Node.js, React
 - **DevOps**: Docker, Kubernetes, Ansible, Jenkins
-- **Cloud**: AWS, Azure, Google Cloud
-- **Datenbanken**: PostgreSQL, MongoDB, Kafka, Redis
+- **Datenbanken**: PostgreSQL, MongoDB, Kafka, SQL
 
 ### 📝 Projekte
 1. **[Kubernetes for Beginners](https://github.com/your-username/kubernetes-for-beginners)**  
